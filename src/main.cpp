@@ -3,24 +3,34 @@
 // www.kuongshun.com
 // 2023.6.18
 
-const int ledPin = 13; // the led attach to
+#include <Servo.h>
+/* After including the corresponding libraries,
+   we can use the "class" like "Servo" created by the developer for us.
+   We can use the functions and variables created in the libraries by creating
+   objects like the following "myservo" to refer to the members in ".".*/
+
+Servo myservo;
+// it created an object called myservo.
+/*  you can see Servo as a complex date type(Including functions and various data types)
+    and see myservo as variables.               */
 
 void setup()
 {
-  pinMode(ledPin, OUTPUT); // initialize the ledPin as an output
-  pinMode(2, INPUT);
-  digitalWrite(2, HIGH);
+  /*"attach" and "write" are both functions,
+     and they are members contained in the complex structure of "Servo".
+     We can only use them if we create the object "myservo" for the complex structure of "Servo".
+  */
+  myservo.attach(9); // connect pin 9 with the control line(the middle line of Servo)
+  myservo.write(90); // move servos to center position -> 90°
 }
-
 void loop()
 {
-  int digitalVal = digitalRead(2); // read pin 2
-  if (HIGH == digitalVal)
-  {
-    digitalWrite(ledPin, LOW); // turn the led off
-  }
-  else
-  {
-    digitalWrite(ledPin, HIGH); // turn the led on
-  }
+  myservo.write(90); // move servos to center position -> 90°
+  delay(1000);
+  myservo.write(60); // move servos to center position -> 60°
+  delay(1000);
+  myservo.write(90); // move servos to center position -> 90°
+  delay(1000);
+  myservo.write(150); // move servos to center position -> 120°
+  delay(1000);
 }
