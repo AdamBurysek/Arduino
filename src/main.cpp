@@ -50,7 +50,7 @@ void loop()
   {
     Serial.print("T = ");
     Serial.print(temperature, 1);
-    Serial.print(" ℃, H = ");
+    Serial.print("°C, H = ");
     Serial.print(humidity, 1);
     Serial.println("%");
   }
