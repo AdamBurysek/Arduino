@@ -1,42 +1,57 @@
 // www.kuongshun.com
 // 2023.6.18
 
-/* @file CustomKeypad.pde
-|| @version 1.0
-|| @author Alexander Brevig
-|| @contact alexanderbrevig@gmail.com
-||
-|| @description
-|| | Demonstrates changing the keypad size and key values.
-|| #
-*/
-#include <Keypad.h>
+#include <dht_nonblocking.h>
+#define DHT_SENSOR_TYPE DHT_TYPE_11
 
-const byte ROWS = 4; // four rows
-const byte COLS = 4; // four columns
-// define the two-dimensional array on the buttons of the keypads
-char hexaKeys[ROWS][COLS] = {
-    {'1', '2', '3', 'A'},
-    {'4', '5', '6', 'B'},
-    {'7', '8', '9', 'C'},
-    {'*', '0', '#', 'D'}};
-byte rowPins[ROWS] = {9, 8, 7, 6}; // connect to the row pinouts of the keypad
-byte colPins[COLS] = {5, 4, 3, 2}; // connect to the column pinouts of the keypad
+static const int DHT_SENSOR_PIN = 2;
+DHT_nonblocking dht_sensor(DHT_SENSOR_PIN, DHT_SENSOR_TYPE);
 
-// initialize an instance of class NewKeypad
-Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
-
+/*
+ * Initialize the serial port.
+ */
 void setup()
 {
   Serial.begin(9600);
 }
 
+/*
+ * Poll for a measurement, keeping the state machine alive.  Returns
+ * true if a measurement is available.
+ */
+static bool measure_environment(float *temperature, float *humidity)
+{
+  static unsigned long measurement_timestamp = millis();
+
+  /* Measure once every four seconds. */
+  if (millis() - measurement_timestamp > 1000ul)
+  {
+    if (dht_sensor.measure(temperature, humidity) == true)
+    {
+      measurement_timestamp = millis();
+      return (true);
+    }
+  }
+
+  return (false);
+}
+
+/*
+ * Main program loop.
+ */
 void loop()
 {
-  char customKey = customKeypad.getKey();
+  float temperature;
+  float humidity;
 
-  if (customKey)
+  /* Measure temperature and humidity.  If the functions returns
+     true, then a measurement is available. */
+  if (measure_environment(&temperature, &humidity) == true)
   {
-    Serial.println(customKey);
+    Serial.print("T = ");
+    Serial.print(temperature, 1);
+    Serial.print(" ℃, H = ");
+    Serial.print(humidity, 1);
+    Serial.println("%");
   }
 }
