@@ -28,15 +28,15 @@ Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS)
 
 void setup()
 {
-  Serial.begin(9600);
+    Serial.begin(9600);
 }
 
 void loop()
 {
-  char customKey = customKeypad.getKey();
+    char customKey = customKeypad.getKey();
 
-  if (customKey)
-  {
-    Serial.println(customKey);
-  }
+    if (customKey)
+    {
+        Serial.println(customKey);
+    }
 }
