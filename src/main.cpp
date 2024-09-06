@@ -1,27 +1,36 @@
 #include <Arduino.h>
 
-// www.kuongshun.com
-// 2023.6.18
-
-int ledPin = 5;
-int buttonApin = 9;
-int buttonBpin = 8;
-
+int buzzer = 12; // the pin of the active buzzer
 void setup()
 {
-  pinMode(ledPin, OUTPUT);
-  pinMode(buttonApin, INPUT_PULLUP);
-  pinMode(buttonBpin, INPUT_PULLUP);
+  pinMode(buzzer, OUTPUT); // initialize the buzzer pin as an output
 }
-
 void loop()
 {
-  if (digitalRead(buttonApin) == LOW)
+  int sound_duration = 500;
+  for (int i = 0; i < 20; i++)
   {
-    digitalWrite(ledPin, HIGH);
+    // use the if function to gradually shorten the interval of the sound
+    if (i < 5)
+    {
+      sound_duration = 500;
+    }
+    else if (i < 10)
+    {
+      sound_duration = 300;
+    }
+    else if (i < 20)
+    {
+      sound_duration = 100;
+    }
+    // activate the active buzzer
+    digitalWrite(buzzer, HIGH);
+    delay(sound_duration); // wait for sound_duration ms
+    // deactivate the active buzzer
+    digitalWrite(buzzer, LOW);
+    delay(sound_duration); // wait for sound_duration ms
   }
-  if (digitalRead(buttonBpin) == LOW)
-  {
-    digitalWrite(ledPin, LOW);
-  }
+  // activate the active buzzer
+  digitalWrite(buzzer, HIGH);
+  delay(5000); // keep playing sound for 5 seconds.
 }
