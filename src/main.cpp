@@ -1,36 +1,30 @@
 #include <Arduino.h>
 
-int buzzer = 12; // the pin of the active buzzer
+// www.kuongshun.com
+// 2023.6.18
+
+#include <pitches.h>
+
+// notes in the melody:
+int melody[] = {
+    NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C6};
+int duration = 500; // 500 miliseconds
+
 void setup()
 {
-  pinMode(buzzer, OUTPUT); // initialize the buzzer pin as an output
 }
+
 void loop()
 {
-  int sound_duration = 500;
-  for (int i = 0; i < 20; i++)
+  for (int thisNote = 0; thisNote < 8; thisNote++)
   {
-    // use the if function to gradually shorten the interval of the sound
-    if (i < 5)
-    {
-      sound_duration = 500;
-    }
-    else if (i < 10)
-    {
-      sound_duration = 300;
-    }
-    else if (i < 20)
-    {
-      sound_duration = 100;
-    }
-    // activate the active buzzer
-    digitalWrite(buzzer, HIGH);
-    delay(sound_duration); // wait for sound_duration ms
-    // deactivate the active buzzer
-    digitalWrite(buzzer, LOW);
-    delay(sound_duration); // wait for sound_duration ms
+    // pin8 output the voice, every scale is 0.5 sencond
+    tone(8, melody[thisNote], duration);
+
+    // Output the voice after several minutes
+    delay(1000);
   }
-  // activate the active buzzer
-  digitalWrite(buzzer, HIGH);
-  delay(5000); // keep playing sound for 5 seconds.
+
+  // restart after two seconds
+  delay(2000);
 }
