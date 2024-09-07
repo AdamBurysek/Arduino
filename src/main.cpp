@@ -1,57 +1,30 @@
+#include <Arduino.h>
+
 // www.kuongshun.com
 // 2023.6.18
 
-#include <dht_nonblocking.h>
-#define DHT_SENSOR_TYPE DHT_TYPE_11
+// Arduino pin numbers
+const int SW_pin = 2; // digital pin connected to switch output
+const int X_pin = 0;  // analog pin connected to X output
+const int Y_pin = 1;  // analog pin connected to Y output
 
-static const int DHT_SENSOR_PIN = 2;
-DHT_nonblocking dht_sensor(DHT_SENSOR_PIN, DHT_SENSOR_TYPE);
-
-/*
- * Initialize the serial port.
- */
 void setup()
 {
+  pinMode(SW_pin, INPUT);
+  digitalWrite(SW_pin, HIGH);
   Serial.begin(9600);
 }
 
-/*
- * Poll for a measurement, keeping the state machine alive.  Returns
- * true if a measurement is available.
- */
-static bool measure_environment(float *temperature, float *humidity)
-{
-  static unsigned long measurement_timestamp = millis();
-
-  /* Measure once every four seconds. */
-  if (millis() - measurement_timestamp > 1000ul)
-  {
-    if (dht_sensor.measure(temperature, humidity) == true)
-    {
-      measurement_timestamp = millis();
-      return (true);
-    }
-  }
-
-  return (false);
-}
-
-/*
- * Main program loop.
- */
 void loop()
 {
-  float temperature;
-  float humidity;
-
-  /* Measure temperature and humidity.  If the functions returns
-     true, then a measurement is available. */
-  if (measure_environment(&temperature, &humidity) == true)
-  {
-    Serial.print("T = ");
-    Serial.print(temperature, 1);
-    Serial.print("°C, H = ");
-    Serial.print(humidity, 1);
-    Serial.println("%");
-  }
+  Serial.print("Switch:  ");
+  Serial.print(digitalRead(SW_pin));
+  Serial.print("\n");
+  Serial.print("X-axis: ");
+  Serial.print(analogRead(X_pin));
+  Serial.print("\n");
+  Serial.print("Y-axis: ");
+  Serial.println(analogRead(Y_pin));
+  Serial.print("\n\n");
+  delay(1000);
 }
