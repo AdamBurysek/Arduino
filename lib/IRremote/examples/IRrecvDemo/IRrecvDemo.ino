@@ -24,10 +24,8 @@ void setup()
   Serial.println("Enabled IRin");
 }
 
-void loop()
-{
-  if (irrecv.decode(&results))
-  {
+void loop() {
+  if (irrecv.decode(&results)) {
     Serial.println(results.value, HEX);
     irrecv.resume(); // Receive the next value
   }
