@@ -1,191 +1,46 @@
+// MPU-6050 Short Example Sketch
 // www.kuongshun.com
 // 2023.6.18
 
-// We always have to include the library
-#include "LedControl.h"
-
-/*
- Now we need a LedControl to work with.
- ***** These pin numbers will probably not work with your hardware *****
- pin 12 is connected to the DataIn
- pin 11 is connected to LOAD(CS)
- pin 10 is connected to the CLK
- We have only a single MAX72XX.
- */
-LedControl lc = LedControl(12, 10, 11, 1);
-
-/* image switching time */
-unsigned long delaytime1 = 500;
-unsigned long delaytime2 = 50;
+#include <Wire.h>
+#include <Arduino.h>
+const int MPU_addr = 0x68; // I2C address of the MPU-6050
+int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ;
 void setup()
 {
-  /*
-   The MAX72XX is in power-saving mode on startup,
-   we have to do a wakeup call
-   */
-  lc.shutdown(0, false);
-  /* Set the brightness to a medium values */
-  lc.setIntensity(0, 8);
-  /* and clear the display */
-  lc.clearDisplay(0);
+  Wire.begin();
+  Wire.beginTransmission(MPU_addr);
+  Wire.write(0x6B); // PWR_MGMT_1 register
+  Wire.write(0);    // set to zero (wakes up the MPU-6050)
+  Wire.endTransmission(true);
+  Serial.begin(9600);
 }
-
-/*
- This method will display the characters for the
- word "Arduino" one after the other on the matrix.
- (you need at least 5x7 leds to see the whole chars)
- */
-void writeArduinoOnMatrix()
-{
-  /* here is the data for the characters */
-  byte a[5] = {B01111110, B10001000, B10001000, B10001000, B01111110};
-  byte r[5] = {B00010000, B00100000, B00100000, B00010000, B00111110};
-  byte d[5] = {B11111110, B00010010, B00100010, B00100010, B00011100};
-  byte u[5] = {B00111110, B00000100, B00000010, B00000010, B00111100};
-  byte i[5] = {B00000000, B00000010, B10111110, B00100010, B00000000};
-  byte n[5] = {B00011110, B00100000, B00100000, B00010000, B00111110};
-  byte o[5] = {B00011100, B00100010, B00100010, B00100010, B00011100};
-
-  /* now display them one by one with a small delay */
-  lc.setRow(0, 0, a[0]);
-  lc.setRow(0, 1, a[1]);
-  lc.setRow(0, 2, a[2]);
-  lc.setRow(0, 3, a[3]);
-  lc.setRow(0, 4, a[4]);
-  delay(delaytime1);
-  lc.setRow(0, 0, r[0]);
-  lc.setRow(0, 1, r[1]);
-  lc.setRow(0, 2, r[2]);
-  lc.setRow(0, 3, r[3]);
-  lc.setRow(0, 4, r[4]);
-  delay(delaytime1);
-  lc.setRow(0, 0, d[0]);
-  lc.setRow(0, 1, d[1]);
-  lc.setRow(0, 2, d[2]);
-  lc.setRow(0, 3, d[3]);
-  lc.setRow(0, 4, d[4]);
-  delay(delaytime1);
-  lc.setRow(0, 0, u[0]);
-  lc.setRow(0, 1, u[1]);
-  lc.setRow(0, 2, u[2]);
-  lc.setRow(0, 3, u[3]);
-  lc.setRow(0, 4, u[4]);
-  delay(delaytime1);
-  lc.setRow(0, 0, i[0]);
-  lc.setRow(0, 1, i[1]);
-  lc.setRow(0, 2, i[2]);
-  lc.setRow(0, 3, i[3]);
-  lc.setRow(0, 4, i[4]);
-  delay(delaytime1);
-  lc.setRow(0, 0, n[0]);
-  lc.setRow(0, 1, n[1]);
-  lc.setRow(0, 2, n[2]);
-  lc.setRow(0, 3, n[3]);
-  lc.setRow(0, 4, n[4]);
-  delay(delaytime1);
-  lc.setRow(0, 0, o[0]);
-  lc.setRow(0, 1, o[1]);
-  lc.setRow(0, 2, o[2]);
-  lc.setRow(0, 3, o[3]);
-  lc.setRow(0, 4, o[4]);
-  delay(delaytime1);
-  lc.setRow(0, 0, 0);
-  lc.setRow(0, 1, 0);
-  lc.setRow(0, 2, 0);
-  lc.setRow(0, 3, 0);
-  lc.setRow(0, 4, 0);
-  delay(delaytime1);
-}
-
-/*
-  This function lights up some Leds in a row.
- The pattern will be repeated on every row.
- The pattern will blink along with the row-number.
- row number 4 (index==3) will blink 4 times etc.
- */
-void rows()
-{
-  for (int row = 0; row < 8; row++)
-  {
-    delay(delaytime2);
-    lc.setRow(0, row, B10100000);
-    delay(delaytime2);
-    lc.setRow(0, row, (byte)0);
-    for (int i = 0; i < row; i++)
-    {
-      delay(delaytime2);
-      lc.setRow(0, row, B10100000);
-      delay(delaytime2);
-      lc.setRow(0, row, (byte)0);
-    }
-  }
-}
-
-/*
-  This function lights up some Leds in a column.
- The pattern will be repeated on every column.
- The pattern will blink along with the column-number.
- column number 4 (index==3) will blink 4 times etc.
- */
-void columns()
-{
-  for (int col = 0; col < 8; col++)
-  {
-    delay(delaytime2);
-    lc.setColumn(0, col, B10100000);
-    delay(delaytime2);
-    lc.setColumn(0, col, (byte)0);
-    for (int i = 0; i < col; i++)
-    {
-      delay(delaytime2);
-      lc.setColumn(0, col, B10100000);
-      delay(delaytime2);
-      lc.setColumn(0, col, (byte)0);
-    }
-  }
-}
-
-/*
- This function will light up every Led on the matrix.
- The led will blink along with the row-number.
- row number 4 (index==3) will blink 4 times etc.
- */
-void single()
-{
-  for (int row = 0; row < 8; row++)
-  {
-    for (int col = 0; col < 8; col++)
-    {
-      delay(delaytime2);
-      lc.setLed(0, row, col, true);
-      delay(delaytime2);
-      for (int i = 0; i < col; i++)
-      {
-        lc.setLed(0, row, col, false);
-        delay(delaytime2);
-        lc.setLed(0, row, col, true);
-        delay(delaytime2);
-      }
-    }
-  }
-}
-
-void clear()
-{
-  for (int row = 0; row < 8; row++)
-  {
-    for (int col = 0; col < 8; col++)
-    {
-      lc.setLed(0, row, col, false);
-    }
-  }
-}
-
 void loop()
 {
-  writeArduinoOnMatrix();
-  rows();
-  columns();
-  single();
-  clear();
+  Wire.beginTransmission(MPU_addr);
+  Wire.write(0x3B); // starting with register 0x3B (ACCEL_XOUT_H)
+  Wire.endTransmission(false);
+  Wire.requestFrom(MPU_addr, 14, true); // request a total of 14 registers
+  AcX = Wire.read() << 8 | Wire.read(); // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
+  AcY = Wire.read() << 8 | Wire.read(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
+  AcZ = Wire.read() << 8 | Wire.read(); // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+  Tmp = Wire.read() << 8 | Wire.read(); // 0x41 (TEMP_OUT_H) & 0x42 (TEMP_OUT_L)
+  GyX = Wire.read() << 8 | Wire.read(); // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
+  GyY = Wire.read() << 8 | Wire.read(); // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
+  GyZ = Wire.read() << 8 | Wire.read(); // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
+  Serial.print("AcX = ");
+  Serial.print(AcX);
+  Serial.print(" | AcY = ");
+  Serial.print(AcY);
+  Serial.print(" | AcZ = ");
+  Serial.print(AcZ);
+  Serial.print(" | Tmp = ");
+  Serial.print(Tmp / 340.00 + 36.53); // From the datasheet of MPU6050, we can know the temperature formula
+  Serial.print(" | GyX = ");
+  Serial.print(GyX);
+  Serial.print(" | GyY = ");
+  Serial.print(GyY);
+  Serial.print(" | GyZ = ");
+  Serial.println(GyZ);
+  delay(1000);
 }
