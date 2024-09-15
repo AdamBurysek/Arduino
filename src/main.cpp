@@ -3,28 +3,39 @@
 
 #include <Arduino.h>
 
-int ledPin = 13; // LED on Pin 13 of Arduino
-int pirPin = 7;  // Input for HC-S501
-
-int pirValue; // Place to store read PIR Value
+int adc_id = 0;
+int HistoryValue = 0;
+char printBuffer[128];
 
 void setup()
 {
-
-  pinMode(ledPin, OUTPUT);
-  pinMode(pirPin, INPUT);
-  digitalWrite(ledPin, LOW);
+  Serial.begin(9600);
 }
 
 void loop()
 {
-  pirValue = digitalRead(pirPin);
-  if (pirValue == 1)
+  int value = analogRead(adc_id);
+  // get adc value
+  /*&& (logical AND) operator truth table
+  false&&false=false
+  false&&true=false
+  true&&false=false
+  true&&true=true
+
+  || (logical OR) operator truth table
+  false||false=false
+  false||true=true
+  true||false=true
+  true||true=true
+  print level when the change is greater than or less than 10。
+  */
+  if (((HistoryValue >= value) && ((HistoryValue - value) > 10)) || ((HistoryValue < value) && ((value - HistoryValue) > 10)))
   {
-    digitalWrite(ledPin, HIGH);
-  }
-  else if (pirValue == 0)
-  {
-    digitalWrite(ledPin, LOW);
+    sprintf(printBuffer, "ADC %d level is %d\n", adc_id, value);
+    // Convert binary numbers "adc_id" and "value" into strings, and store the whole string "ADC "adc_id" level is "value"\n"in C.
+
+    Serial.print(printBuffer);
+    HistoryValue = value;
+    delay(500);
   }
 }
