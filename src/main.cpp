@@ -1,41 +1,51 @@
 // www.kuongshun.com
 // 2023.6.18
 
+#include <Wire.h>
+#include <DS3231.h>
 #include <Arduino.h>
 
-int adc_id = 0;
-int HistoryValue = 0;
-char printBuffer[128];
+DS3231 clock;
+RTCDateTime dt;
 
 void setup()
 {
   Serial.begin(9600);
+
+  Serial.println("Initialize RTC module");
+  // Initialize DS3231
+  clock.begin();
+
+  // Manual (YYYY, MM, DD, HH, II, SS
+  // clock.setDateTime(2016, 12, 9, 11, 46, 00);
+
+  // Send sketch compiling time to Arduino
+  clock.setDateTime(__DATE__, __TIME__);
+  /*
+  Tips:This command will be executed every time when Arduino restarts.
+       Comment this line out to store the memory of DS3231 module
+  */
 }
 
 void loop()
 {
-  int value = analogRead(adc_id);
-  // get adc value
-  /*&& (logical AND) operator truth table
-  false&&false=false
-  false&&true=false
-  true&&false=false
-  true&&true=true
+  dt = clock.getDateTime();
 
-  || (logical OR) operator truth table
-  false||false=false
-  false||true=true
-  true||false=true
-  true||true=true
-  print level when the change is greater than or less than 10。
-  */
-  if (((HistoryValue >= value) && ((HistoryValue - value) > 10)) || ((HistoryValue < value) && ((value - HistoryValue) > 10)))
-  {
-    sprintf(printBuffer, "ADC %d level is %d\n", adc_id, value);
-    // Convert binary numbers "adc_id" and "value" into strings, and store the whole string "ADC "adc_id" level is "value"\n"in C.
+  // For leading zero look to DS3231_dateformat example
 
-    Serial.print(printBuffer);
-    HistoryValue = value;
-    delay(500);
-  }
+  Serial.print("Raw data: ");
+  Serial.print(dt.year);
+  Serial.print("-");
+  Serial.print(dt.month);
+  Serial.print("-");
+  Serial.print(dt.day);
+  Serial.print(" ");
+  Serial.print(dt.hour);
+  Serial.print(":");
+  Serial.print(dt.minute);
+  Serial.print(":");
+  Serial.print(dt.second);
+  Serial.println("");
+
+  delay(1000);
 }
