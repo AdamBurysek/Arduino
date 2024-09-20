@@ -24,25 +24,25 @@ int Led13 = 13;           // Define LED port; this is the LED built in to the Ar
 
 void setup()
 {
-  Serial.begin(9600);               // The IDE settings for Serial Monitor/Plotter (preferred) must match this speed
-  pinMode(sensorDigitalPin, INPUT); // Define pin 3 as an input port, to accept digital input
-  pinMode(Led13, OUTPUT);           // Define LED13 as an output port, to indicate digital trigger reached
+    Serial.begin(9600);               // The IDE settings for Serial Monitor/Plotter (preferred) must match this speed
+    pinMode(sensorDigitalPin, INPUT); // Define pin 3 as an input port, to accept digital input
+    pinMode(Led13, OUTPUT);           // Define LED13 as an output port, to indicate digital trigger reached
 }
 
 void loop()
 {
-  analogValue = analogRead(sensorAnalogPin);    // Read the value of the analog interface A0 assigned to digitalValue
-  digitalValue = digitalRead(sensorDigitalPin); // Read the value of the digital interface 7 assigned to digitalValue
-  Serial.println(analogValue);                  // Send the analog value to the serial transmit interface
+    analogValue = analogRead(sensorAnalogPin);    // Read the value of the analog interface A0 assigned to digitalValue
+    digitalValue = digitalRead(sensorDigitalPin); // Read the value of the digital interface 7 assigned to digitalValue
+    Serial.println(analogValue);                  // Send the analog value to the serial transmit interface
 
-  if (digitalValue == HIGH) // When the Sound Sensor sends signla, via voltage present, light LED13 (L)
-  {
-    digitalWrite(Led13, HIGH);
-  }
-  else
-  {
-    digitalWrite(Led13, LOW);
-  }
+    if (digitalValue == HIGH) // When the Sound Sensor sends signla, via voltage present, light LED13 (L)
+    {
+        digitalWrite(Led13, HIGH);
+    }
+    else
+    {
+        digitalWrite(Led13, LOW);
+    }
 
-  delay(200); // Slight pause so that we don't overwhelm the serial interface
+    delay(200); // Slight pause so that we don't overwhelm the serial interface
 }
